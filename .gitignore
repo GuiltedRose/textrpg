@@ -26,6 +26,10 @@
 *.a
 *.lib
 
+# Directories to Ignore
+VSCode/
+build/
+
 # Executables
 *.exe
 *.out
