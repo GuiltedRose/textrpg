@@ -1,5 +1,5 @@
 #include <iostream>
-#include "game.h"
+#include "Game.h"
 
 int main(int argc, char* argv[]) {
     std::cout << "Welcome to the game!" << std::endl;
