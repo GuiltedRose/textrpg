@@ -1,8 +1,14 @@
 #include "Game.h"
 #include <iostream>
 
-// Explicit constructor that properly initializes the Player instance
-Game::Game() : player("Hero") {} // Ensures Player gets a name
+Game::Game() : player("Hero") {
+    // Initialize skills to level 0 and XP 0 for all valid skills
+    for (const auto& skill : player.getValidSkills()) {
+        // Initialize each skill with level 0 and XP 0
+        player.getSkills()[skill] = 0;    // Initial level of the skill is 0
+        player.getSkillXP()[skill] = 0;   // Initial XP of the skill is 0
+    }
+}
 
 void Game::run() {
     bool isRunning = true;
@@ -47,5 +53,5 @@ void Game::trainSkillMenu() {
     std::cin.ignore();
     std::getline(std::cin, skill);
 
-    player.trainSkill(skill, 1);
+    player.trainSkill(skill, 10);  // Give 10 XP for training a skill
 }

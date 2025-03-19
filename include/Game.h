@@ -8,6 +8,10 @@ class Game {
 public:
     Game(); // Explicit constructor declaration
     void run();
+    void showMenu();
+    int getUserChoice();
+    void showPlayerStats();
+    void trainSkill();
 
 private:
     Player player; // This must be initialized in Game's constructor

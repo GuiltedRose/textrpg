@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <iostream>
 
+// Define valid skills
 const std::set<std::string> Player::validSkills = {
     "Swordsmanship", "Archery", "Unarmed Combat",
     "Fire Magic", "Water Magic", "Healing Magic",
@@ -8,7 +9,6 @@ const std::set<std::string> Player::validSkills = {
     "Persuasion", "Bartering", "Intimidation"
 };
 
-// Properly initialize Player
 Player::Player(std::string name) : name(std::move(name)), health(100), stamina(100), mana(50) {}
 
 void Player::displayStats() const {
@@ -18,7 +18,8 @@ void Player::displayStats() const {
     std::cout << "Mana: " << mana << "\n";
     std::cout << "Skills:\n";
     for (const auto& [skill, level] : skills) {
-        std::cout << " - " << skill << ": Level " << level << "\n";
+        // Display both level and XP
+        std::cout << " - " << skill << ": Level " << level << " | XP: " << skillXP.at(skill) << "\n";
     }
 }
 
@@ -28,6 +29,19 @@ void Player::trainSkill(const std::string& skill, int amount) {
         return;
     }
 
-    skills[skill] += amount;
-    std::cout << "You trained " << skill << "! It is now level " << skills[skill] << ".\n";
+    // Add XP to the skill
+    skillXP[skill] += amount;
+    std::cout << "You gained " << amount << " XP in " << skill << "!\n";
+
+    // Level up if XP threshold is reached
+    if (skillXP[skill] >= xpThreshold) {
+        levelUpSkill(skill);
+    }
+}
+
+void Player::levelUpSkill(const std::string& skill) {
+    // Increase skill level
+    skills[skill] += 1;
+    skillXP[skill] = 0;  // Reset XP after leveling up
+    std::cout << skill << " has leveled up! It is now level " << skills[skill] << ".\n";
 }
