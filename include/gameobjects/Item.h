@@ -1,17 +1,14 @@
-#ifndef ITEM_H
-#define ITEM_H
-
+#pragma once
 #include <string>
 
 class Item {
 public:
     Item(const std::string& name, const std::string& description);
-    const std::string& getName() const;
-    const std::string& getDescription() const;
+    Item(const std::string& name); // Added this constructor
+
+    std::string getName() const;
 
 private:
     std::string name;
     std::string description;
 };
-
-#endif // ITEM_H

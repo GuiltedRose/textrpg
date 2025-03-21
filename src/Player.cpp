@@ -1,5 +1,6 @@
 #include "Player.h"
 #include <iostream>
+#include <sstream>
 
 // Define valid skills
 const std::set<std::string> Player::validSkills = {
@@ -9,7 +10,8 @@ const std::set<std::string> Player::validSkills = {
     "Persuasion", "Bartering", "Intimidation"
 };
 
-Player::Player(std::string name) : name(std::move(name)), health(100), stamina(100), mana(50) {}
+Player::Player(std::string name) : name(std::move(name)), level(1), xp(0), gold(0), health(100), stamina(100), mana(50) {}
+
 
 void Player::displayStats() const {
     std::cout << "\n=== " << name << "'s Stats ===\n";
@@ -44,4 +46,129 @@ void Player::levelUpSkill(const std::string& skill) {
     skills[skill] += 1;
     skillXP[skill] = 0;  // Reset XP after leveling up
     std::cout << skill << " has leveled up! It is now level " << skills[skill] << ".\n";
+}
+
+std::string Player::getInventoryString() const {
+    std::string result;
+    for (const auto& item : inventory) {
+        if (!result.empty()) result += ",";
+        result += item.getName();
+    }
+    return result;
+}
+
+const std::string& Player::getName() const {
+    return name;
+}
+
+
+std::string Player::getSkillsString() const {
+    std::string result;
+    for (const auto& skill : skills) {
+        if (!result.empty()) result += ",";
+        result += skill.first;
+    }
+    return result;
+}
+
+std::string Player::getSkillXPString() const {
+    std::string result;
+    for (const auto& xp : skillXP) {
+        if (!result.empty()) result += ",";
+        result += xp.first + ":" + std::to_string(xp.second);
+    }
+    return result;
+}
+
+const std::set<std::string>& Player::getValidSkills() {
+    return validSkills;
+}
+
+std::map<std::string, int>& Player::getSkills() {
+    return skills;
+}
+
+std::map<std::string, int>& Player::getSkillXP() {
+    return skillXP;
+}
+
+
+void Player::loadInventoryFromString(const std::string& inventoryStr) {
+    inventory.clear();
+    std::stringstream ss(inventoryStr);
+    std::string item;
+    while (std::getline(ss, item, ',')) {
+        inventory.push_back(Item(item));
+    }
+}
+
+void Player::loadSkillsFromString(const std::string& skillsStr) {
+    skills.clear();
+    std::stringstream ss(skillsStr);
+    std::string skill;
+    while (std::getline(ss, skill, ',')) {
+        skills[skill] = 0; // Default to level 0 if not specified
+    }
+}
+
+void Player::loadSkillXPFromString(const std::string& skillXPStr) {
+    skillXP.clear();
+    std::stringstream ss(skillXPStr);
+    std::string pair;
+    while (std::getline(ss, pair, ',')) {
+        size_t pos = pair.find(':');
+        if (pos != std::string::npos) {
+            std::string skill = pair.substr(0, pos);
+            int xp = std::stoi(pair.substr(pos + 1));
+            skillXP[skill] = xp;
+        }
+    }
+}
+
+void Player::addItem(const Item& item) {
+    inventory.push_back(item);
+}
+
+int Player::getLevel() const {
+    return level;
+}
+
+int Player::getXP() const {
+    return xp;
+}
+
+int Player::getHealth() const {
+    return health;
+}
+
+int Player::getStamina() const {
+    return stamina;
+}
+
+int Player::getGold() const {
+    return gold;
+}
+
+void Player::setLevel(int lvl) {
+    level = lvl;
+}
+
+void Player::setXP(int x) {
+    xp = x;
+}
+
+void Player::setHealth(int h) {
+    health = h;
+}
+
+void Player::setStamina(int s) {
+    stamina = s;
+}
+
+void Player::setGold(int g) {
+    gold = g;
+}
+
+void Player::setName(const std::string& newName) {
+    name = newName;
 }
