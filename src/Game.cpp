@@ -8,7 +8,7 @@ Game::Game() : player([] {
         if (name.empty()) name = "Hero";
         return Player(name);
     }()) {
-        
+
     // Ask if the player wants to load a saved game
     std::cout << "Load saved game? (y/n): ";
     char choice;
@@ -32,10 +32,25 @@ Game::Game() : player([] {
 }
 
 void Game::run() {
-    bool isRunning = true;
-    while (isRunning) {
-        displayMenu();
-        isRunning = handleInput();
+    
+    GameState state = GameState::MainMenu;
+
+    while(state != GameState::Exit) {
+        switch(state) {
+            case GameState::MainMenu: 
+                displayMenu();
+                state = handleInput();
+                break;
+            case GameState::GameOver: 
+                std::cout << "Game Over! Returning to Menu...\n";
+                state = GameState::MainMenu;
+                break;
+            case GameState::Exit: 
+                break;
+            default: std::cout << "Unhandled Game State...\n";
+                state = GameState::Exit;
+                break;
+        }
     }
 
     // Prompt to save before exiting
@@ -58,7 +73,7 @@ void Game::displayMenu() {
     std::cout << "Choose an action: ";
 }
 
-bool Game::handleInput() {
+GameState Game::handleInput() {
     int choice;
     std::cin >> choice;
     std::cin.ignore();
@@ -66,21 +81,25 @@ bool Game::handleInput() {
     switch (choice) {
         case 1:
             trainSkillMenu();
+            return GameState::MainMenu;
             break;
         case 2:
             player.displayStats();
+            return GameState::MainMenu;
             break;
         case 3:
             saveGame();
+            return GameState::MainMenu;
             break;
         case 4:
             std::cout << "Exiting game...\n";
-            return false;
+            return GameState::Exit;
         default:
             std::cout << "Invalid choice, try again.\n";
+            return GameState::MainMenu;
             break;
     }
-    return true;
+    return GameState::MainMenu;
 }
 
 void Game::trainSkillMenu() {

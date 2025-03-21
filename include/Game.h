@@ -3,6 +3,7 @@
 
 #include "Player.h"
 #include "SaveGame.h"
+#include "game_state.h"
 #include <string>
 
 class Game {
@@ -10,7 +11,7 @@ public:
     Game(); // Explicit constructor declaration
     void run();
     void displayMenu();
-    bool handleInput();
+    GameState handleInput();
     void trainSkillMenu();
     void saveGame();
     void loadGame();
