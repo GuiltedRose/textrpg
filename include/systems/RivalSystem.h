@@ -9,7 +9,7 @@ class RivalSystem {
 public:
     RivalSystem(int notorietyThreshold = 10);
 
-    void registerEnemy(std::shared_ptr<Enemy> enemy);
+    void registerEnemy(std::shared_ptr<Enemy>& enemy);
     void evaluateEnemies();
     const std::vector<std::shared_ptr<Enemy>>& getRivals() const;
 
