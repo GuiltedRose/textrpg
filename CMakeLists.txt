@@ -5,15 +5,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(TextRPG)
 
 # Include directories
-include_directories(include include/gameobjects)
+include_directories(include include/gameobjects include/systems)
 
 
 # Specify source files for the executable
 set(SOURCES
     src/main.cpp
     src/Game.cpp
-    src/Player.cpp
+    src/systems/RivalSystem.cpp
+    src/gameobjects/Player.cpp
     src/gameobjects/Item.cpp
+    src/gameobjects/Enemy.cpp
     # Other source files
 )
 
@@ -24,4 +26,4 @@ add_executable(TextRPG ${SOURCES})
 target_link_libraries(TextRPG)
 
 # Ensure include paths are accessible
-target_include_directories(TextRPG PUBLIC include include/gameobjects)
+target_include_directories(TextRPG PUBLIC include include/systems include/gameobjects)

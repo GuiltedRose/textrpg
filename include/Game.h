@@ -1,7 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "Player.h"
+#include "gameobjects/Player.h"
 #include "SaveGame.h"
 #include "game_state.h"
 #include <string>
