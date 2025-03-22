@@ -1,14 +1,15 @@
 #include "systems/RivalSystem.h"
 
-RivalSystem::RivalSystem(std::shared_ptr<Enemy>& allEnemies, int notorietyThreshold) : allEnemies(enemy), notorietyThreshold(notorietyThreshold) {}
+RivalSystem::RivalSystem(int notorietyThreshold)
+    : notorietyThreshold(notorietyThreshold) {}
 
-void RivalSystem::registerEnemy(std::vector<std::shared_ptr<Enemy>>& enemy) {
+void RivalSystem::registerEnemy(std::shared_ptr<Enemy> enemy) {
     allEnemies.push_back(enemy);
 }
 
 void RivalSystem::evaluateEnemies() {
-    for(auto& enemy : allEnemies) {
-        if(!enemy->isRival() && enemy->notorietyThreshold) {
+    for (auto& enemy : allEnemies) {
+        if (!enemy->isRival() && enemy->getNotoriety() >= notorietyThreshold) {
             enemy->promoteRival();
             rivals.push_back(enemy);
         }

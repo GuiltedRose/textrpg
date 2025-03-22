@@ -19,6 +19,7 @@ public:
 private:
     std::string name;
     std::string faction;
+    int level = 1;
     int notoriety;
     bool rivalStatus;
 };
