@@ -27,7 +27,8 @@ public:
     int getXP() const;
     int getHealth() const;
     int getStamina() const;
-    int getGold() const;
+    int getGold() const;   
+    std::string getPosition() const; 
 
     void setLevel(int lvl);
     void setXP(int xp);
@@ -35,6 +36,7 @@ public:
     void setStamina(int s);
     void setGold(int g);
     void setName(const std::string& name);
+    void setPosition(const std::string& newPos);
 
     std::string getInventoryString() const;
     std::string getSkillsString() const;
@@ -62,6 +64,8 @@ private:
 
     const int xpThreshold = 100;
     void levelUpSkill(const std::string& skill);
+
+    std::string position = "unknown";
 
 
 };

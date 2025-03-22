@@ -172,3 +172,11 @@ void Player::setGold(int g) {
 void Player::setName(const std::string& newName) {
     name = newName;
 }
+
+void Player::setPosition(const std::string& newPos) {
+    position = newPos;
+}
+
+std::string Player::getPosition() const {
+    return position;
+}

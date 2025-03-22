@@ -1,5 +1,7 @@
 #include "Game.h"
+#include "systems/SaveSystem.h"
 #include <iostream>
+#include <ctime>
 
 Game::Game() : player([] {
         std::string name;
@@ -18,6 +20,22 @@ Game::Game() : player([] {
     if (choice == 'y' || choice == 'Y') {
         loadGame();
     } else {
+        // Step 1: Add our Seed
+        unsigned int seed;
+        std::cout << "Enter a world seed? (0 for random): ";
+        std::cin >> seed;
+        std::cin.ignore();
+
+        if(seed == 0) seed = static_cast<unsigned int>(std::time(nullptr));
+        worldSeed = seed;
+
+        // Step 2: Generate World
+        std::string startLoc;
+        worldMap = WorldGenerator::generateMap(10, startLoc, seed);
+
+        // Step 3: Placing player
+        player.setPosition(startLoc);
+
         // Initialize skills to level 0 and XP 0 for all valid skills
         for (const auto& skill : player.getValidSkills()) {
             player.getSkills()[skill] = 0;    // Initial level of the skill is 0
@@ -112,55 +130,52 @@ void Game::trainSkillMenu() {
 
 // Convert Player Data to a Map and Save It
 void Game::saveGame() {
-    std::unordered_map<std::string, std::string> playerData;
-    
-    playerData["name"] = player.getName();
-    playerData["level"] = std::to_string(player.getLevel());
-    playerData["xp"] = std::to_string(player.getXP());
-    playerData["health"] = std::to_string(player.getHealth());
-    playerData["stamina"] = std::to_string(player.getStamina());
-    playerData["gold"] = std::to_string(player.getGold());
+    std::string saveName;
+    std::cout << "Enter save name (or press Enter for default): ";
+    std::getline(std::cin, saveName);
+    if (saveName.empty()) saveName = "save";
 
-    // Convert inventory to a comma-separated string
-    playerData["inventory"] = player.getInventoryString();
-    
-    // Convert skills and XP to comma-separated values
-    playerData["skills"] = player.getSkillsString();
-    playerData["skill_xp"] = player.getSkillXPString();
+    PlayerData pdata;
+    pdata.name = player.getName();
+    pdata.health = player.getHealth();
+    pdata.position = player.getPosition();
+    pdata.skills = player.getSkills();
+    pdata.skillXP = player.getSkillXP();
 
-    std::string filename;
-    std::cout << "Enter save file name (or press Enter for default): ";
-    std::getline(std::cin, filename);
-    if (filename.empty()) filename = "save.txt";
+    WorldData wdata;
+    wdata.location = player.getPosition();
+    wdata.time = "day";
+    wdata.seed = worldSeed;
 
-    SaveSystem::saveGame(playerData, filename);
+    SaveManager::saveGame(pdata, wdata, saveName);
+    std::cout << "Game saved as \"" << saveName << "\".\n";
 }
+
 
 // Load Player Data from a Map
 void Game::loadGame() {
-    std::string filename;
-    std::cout << "Enter save file name (or press Enter for default): ";
-    std::getline(std::cin, filename);
-    if (filename.empty()) filename = "save.txt";
+    std::string saveName;
+    std::cout << "Enter save name (or press Enter for default): ";
+    std::getline(std::cin, saveName);
+    if (saveName.empty()) saveName = "save";
 
-    std::unordered_map<std::string, std::string> playerData;
-    SaveSystem::loadGame(playerData, filename);
+    PlayerData pdata;
+    WorldData wdata;
 
-    if (playerData.empty()) {
+    SaveManager::loadGame(pdata, wdata, saveName);
+
+    if (pdata.name.empty()) {
         std::cout << "No valid save data found.\n";
         return;
     }
 
-    // Assign loaded values to player
-    player.setName(playerData["name"]);
-    player.setLevel(std::stoi(playerData["level"]));
-    player.setXP(std::stoi(playerData["xp"]));
-    player.setHealth(std::stoi(playerData["health"]));
-    player.setStamina(std::stoi(playerData["stamina"]));
-    player.setGold(std::stoi(playerData["gold"]));
+    player.setName(pdata.name);
+    player.setHealth(pdata.health);
+    player.setPosition(pdata.position);
+    player.getSkills() = pdata.skills;
+    player.getSkillXP() = pdata.skillXP;
 
-    // Load inventory, skills, and skill XP
-    player.loadInventoryFromString(playerData["inventory"]);
-    player.loadSkillsFromString(playerData["skills"]);
-    player.loadSkillXPFromString(playerData["skill_xp"]);
+    worldSeed = wdata.seed;
+    std::string ignoreStart;
+    worldMap = WorldGenerator::generateMap(10, ignoreStart, worldSeed);
 }

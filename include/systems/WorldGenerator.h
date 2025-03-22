@@ -4,7 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <random>
-#include <ctime>
+#include <algorithm>
 
 struct Location {
     std::string id;
@@ -15,7 +15,7 @@ struct Location {
 
 class WorldGenerator {
 public:
-    static std::unordered_map<std::string, Location> generateMap(int numLocations, std::string& startLocationId) {
+    static std::unordered_map<std::string, Location> generateMap(int numLocations, std::string& startLocationId, unsigned int seed) {
         std::unordered_map<std::string, Location> map;
         std::vector<std::string> names = {
             "Forest", "Cave", "Village", "Ruins", "Lake",
@@ -30,7 +30,7 @@ public:
             "The air is heavy with magic."
         };
 
-        std::mt19937 rng(staticCast<unsigned int>(std::time(nullptr)));
+        std::mt19937 rng(seed);
         std::uniform_int_distribution<int> nameDist(0, names.size() -1);
         std::uniform_int_distribution<int> descDist(0, descriptions.size() -1);
 
