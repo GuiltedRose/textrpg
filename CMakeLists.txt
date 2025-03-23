@@ -16,6 +16,7 @@ set(SOURCES
     src/gameobjects/Player.cpp
     src/gameobjects/Item.cpp
     src/gameobjects/Enemy.cpp
+    src/gameobjects/Inventory.cpp
     # Other source files
 )
 

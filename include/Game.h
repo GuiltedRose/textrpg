@@ -16,6 +16,9 @@ private:
     // Player stuffs
     Player player;
 
+    // GameState displays
+    void inventoryMenu();
+
     // Game Loop
     void displayMenu();
     GameState handleInput();

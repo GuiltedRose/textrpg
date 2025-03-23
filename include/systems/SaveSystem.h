@@ -14,6 +14,8 @@ struct PlayerData {
 
     std::map<std::string, int> skills;    // Skill name → level
     std::map<std::string, int> skillXP;   // Skill name → XP
+
+    std::string inventory;
 };
 
 struct WorldData {
@@ -33,6 +35,7 @@ namespace SaveManager {
         out << "name=" << player.name << "\n";
         out << "health=" << player.health << "\n";
         out << "position=" << player.position << "\n";
+        out << "inventory=" << player.inventory << "\n";
 
         // Save skills
         out << "skills=";
@@ -73,6 +76,7 @@ namespace SaveManager {
             if (key == "name") player.name = value;
             else if (key == "health") player.health = std::stoi(value);
             else if (key == "position") player.position = value;
+            else if (key == "inventory") player.inventory = value;
 
             else if (key == "skills") {
                 std::stringstream ss(value);
