@@ -11,6 +11,7 @@
 class Player {
 public:
     explicit Player(std::string name);
+    bool isDead() const;
 
     // Calls to Inventory:
     void addItem(const Item& item);
@@ -27,7 +28,7 @@ public:
     Inventory& getInventory();
     const Inventory& getInventory() const;
 
-    const Item& getEquippedWeapon() const;
+    Item getEquippedWeapon() const;
     
     static const std::set<std::string>& getValidSkills();
     const std::string& getName() const;
@@ -36,7 +37,10 @@ public:
 
     int getLevel() const;
     int getXP() const;
+
     int getHealth() const;
+    int getCurrentHP() const;
+
     int getStamina() const;
     int getGold() const;   
     std::string getPosition() const; 
@@ -74,6 +78,8 @@ private:
     int gold;
 
     int health;
+    int currentHP;
+
     int stamina;
     int mana;
 
