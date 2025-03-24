@@ -20,6 +20,8 @@ public:
     EnemyType getType() const;
     RivalRank getRank() const;
 
+    int getHealth() const;
+
     int getRivalLevel() const;
 
     int getLevel() const;
@@ -27,6 +29,7 @@ public:
     std::string getRankString() const;
 
     void setType(EnemyType enemyType);
+    void setHealth(int newHP);
 
     bool isRival() const;
 
@@ -43,9 +46,11 @@ private:
     int threshold = 10;
     int notoriety;
     bool rivalStatus;
+    int health;
+    int newHP;
 
     EnemyType type;
-    RivalRank rank = RivalRank::None;
+    RivalRank rank = RivalRank::Unranked;
 };
 
 #endif

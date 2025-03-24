@@ -10,7 +10,9 @@ const std::set<std::string> Player::validSkills = {
     "Persuasion", "Bartering", "Intimidation"
 };
 
-Player::Player(std::string name) : name(std::move(name)), level(1), xp(0), gold(0), health(100), stamina(100), mana(50) {}
+Player::Player(std::string name)
+    : name(std::move(name)), level(1), xp(0), gold(0),
+      health(100), currentHP(100), stamina(100), mana(50) {}
 
 
 void Player::displayStats() const {
@@ -102,7 +104,7 @@ const Inventory& Player::getInventory() const {
     return inventory;
 }
 
-const Item& Player::getEquippedWeapon() const {
+Item Player::getEquippedWeapon() const {
     return equippedWeapon;
 }
 
@@ -153,6 +155,10 @@ int Player::getHealth() const {
     return health;
 }
 
+int Player::getCurrentHP() const {
+    return currentHP;
+}
+
 int Player::getStamina() const {
     return stamina;
 }
@@ -193,4 +199,8 @@ void Player::setName(const std::string& newName) {
 
 void Player::setPosition(const std::string& newPos) {
     position = newPos;
+}
+
+bool Player::isDead() const {
+    return getCurrentHP() <= 0;
 }

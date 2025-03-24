@@ -1,12 +1,18 @@
 #include "gameobjects/Enemy.h"
 #include "systems/RivalSystem.h"
+#include <iostream>
 
 Enemy::Enemy(std::string name, std::string faction, int level)
-    : name(std::move(name)), faction(std::move(faction)), level(level), notoriety(0), rivalStatus(false), rank(RivalRank::None) {}
+    : name(std::move(name)), faction(std::move(faction)), level(level), notoriety(0), rivalStatus(false), rank(RivalRank::Unranked) {}
 
 const std::string& Enemy::getName() const {
     return name;
 }
+
+int Enemy::getHealth() const {
+    return health;
+}
+
 
 const std::string& Enemy::getFaction() const {
     return faction;
@@ -48,6 +54,7 @@ void Enemy::evaluateRivalLevel(int threshold) {
     while(notoriety >= threshold) {
         rivalLevel++;
         notoriety -= threshold;
+        std::cout << name << " reached Rival Level " << rivalLevel << "!\n";
         threshold *= 2;
     }
 }
@@ -61,6 +68,10 @@ void Enemy::promoteRival(RivalRank newRank) {
 void Enemy::setType(EnemyType enemyType) {
     type = enemyType;
 } 
+
+void Enemy::setHealth(int newHP) {
+    health = newHP;
+}
 
 std::string Enemy::getRankString() const {
     return RivalSystem::rankToString(rank);

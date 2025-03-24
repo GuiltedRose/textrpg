@@ -27,13 +27,13 @@ RivalRank RivalSystem::determineRank(int rivalLevel, EnemyType type) {
             if (rivalLevel >= 40) return RivalRank::Alpha;
             if (rivalLevel >= 25) return RivalRank::Beast;
             if (rivalLevel >= 15) return RivalRank::Menace;
-            return RivalRank::None;
+            return RivalRank::Unranked;
 
         case EnemyType::BountyHunter:
             if (rivalLevel >= 50) return RivalRank::EliteHunter;
             if (rivalLevel >= 30) return RivalRank::Tracker;
             if (rivalLevel >= 15) return RivalRank::Scout;
-            return RivalRank::None;
+            return RivalRank::Unranked;
 
         case EnemyType::Humanoid:
         default:
@@ -41,7 +41,7 @@ RivalRank RivalSystem::determineRank(int rivalLevel, EnemyType type) {
             if (rivalLevel >= 30) return RivalRank::Scientist;
             if (rivalLevel >= 20) return RivalRank::Manager;
             if (rivalLevel >= 10) return RivalRank::Underling;
-            return RivalRank::None;
+            return RivalRank::Unranked;
     }
 }
 
@@ -57,6 +57,6 @@ std::string RivalSystem::rankToString(RivalRank rank) {
         case RivalRank::Menace: return "Menace";
         case RivalRank::Beast: return "Beast";
         case RivalRank::Alpha: return "Alpha";
-        default: return "None";
+        default: return "Unranked";
     }
 }

@@ -15,5 +15,5 @@ enum class RivalRank {
     Hunter,
     Enforcer,
     EliteHunter,
-    None
+    Unranked
 };
