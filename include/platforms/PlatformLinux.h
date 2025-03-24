@@ -2,7 +2,14 @@
 
 #include "GameWindow.h"
 #include <string>
+
+#ifdef HAVE_X11
 #include <X11/Xlib.h>
+#endif
+
+#ifdef HAVE_WAYLAND
+#include <wayland-client.h>
+#endif
 
 class PlatformWindowLinux : public GameWindow {
 public:
@@ -24,5 +31,14 @@ public:
 private:
     bool useWayland = false;
     bool writeMode = true;
-    Display* display = nullptr; // X11 only
+
+#ifdef HAVE_X11
+    Display* display = nullptr;
+#endif
+
+#ifdef HAVE_WAYLAND
+    struct wl_display* wlDisplay = nullptr;
+    struct wl_compositor* wlCompositor = nullptr;
+    struct wl_surface* wlSurface = nullptr;
+#endif
 };

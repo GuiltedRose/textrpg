@@ -34,7 +34,7 @@ if(WIN32)
     )
 elseif(APPLE)
     message(STATUS "Configuring for macOS")
-    enable_language(OBJCXX)  # Enable Objective-C++ support
+    enable_language(OBJCXX)
 
     set(SOURCE_FILES
         src/platforms/PlatformWindowMac.mm
@@ -53,7 +53,7 @@ elseif(APPLE)
         src/systems/RivalSystem.cpp
         src/systems/CombatManager.cpp
     )
-else() # Assume Linux or other UNIX
+elseif(UNIX)
     message(STATUS "Configuring for Linux/Unix")
     set(SOURCE_FILES
         src/platforms/PlatformLinux.cpp
@@ -77,12 +77,33 @@ endif()
 # Create executable
 add_executable(TextRPG ${SOURCE_FILES})
 
-# Link platform-specific libraries
+# === Link platform-specific libraries ===
 if(WIN32)
-    # Windows-specific libraries (e.g., User32.lib) could go here
+    # Windows-specific links
 elseif(APPLE)
-    # Link macOS frameworks for Cocoa windowing
     target_link_libraries(TextRPG "-framework Cocoa")
 elseif(UNIX)
-    target_link_libraries(TextRPG X11)
+    find_package(X11)
+    if(X11_FOUND)
+        message(STATUS "X11 found, enabling HAVE_X11")
+        target_compile_definitions(TextRPG PRIVATE HAVE_X11)
+        target_include_directories(TextRPG PRIVATE ${X11_INCLUDE_DIR})
+        target_link_libraries(TextRPG ${X11_LIBRARIES})
+    else()
+        message(WARNING "X11 not found. Building without X11 support.")
+    endif()
+endif()
+
+find_package(PkgConfig REQUIRED)
+
+# Detect Wayland
+pkg_check_modules(WAYLAND_CLIENT wayland-client)
+
+if(WAYLAND_CLIENT_FOUND)
+    message(STATUS "Wayland client found, enabling HAVE_WAYLAND")
+    target_compile_definitions(TextRPG PRIVATE HAVE_WAYLAND)
+    target_include_directories(TextRPG PRIVATE ${WAYLAND_CLIENT_INCLUDE_DIRS})
+    target_link_libraries(TextRPG ${WAYLAND_CLIENT_LIBRARIES})
+else()
+    message(WARNING "Wayland client not found. Building without Wayland support.")
 endif()
