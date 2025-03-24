@@ -1,136 +1,92 @@
-// PlatformLinux.cpp
+// PlatformWindowLinux.cpp
 #include "platforms/PlatformLinux.h"
-#include <iostream>
+#include <X11/Xlib.h>
+#include <wayland-client.h>
 #include <cstdlib>
+#include <iostream>
 
-PlatformWindowLinux::PlatformWindowLinux() = default;
+PlatformWindowLinux::PlatformWindowLinux() {
+    const char* waylandEnv = std::getenv("WAYLAND_DISPLAY");
+    const char* x11Env = std::getenv("DISPLAY");
+
+    if (waylandEnv) {
+        useWayland = true;
+        std::cout << "Wayland detected. Initializing Wayland backend...\n";
+        // Wayland init logic here
+    } else if (x11Env) {
+        useWayland = false;
+        std::cout << "X11 detected. Initializing X11 backend...\n";
+        display = XOpenDisplay(nullptr);
+        if (!display) {
+            std::cerr << "Failed to open X11 display" << std::endl;
+            exit(1);
+        }
+    } else {
+        std::cerr << "No supported display environment detected." << std::endl;
+        exit(1);
+    }
+}
 
 PlatformWindowLinux::~PlatformWindowLinux() {
-    if (font) XFreeFont(display, font);
-    XFreeGC(display, gc);
-    XDestroyWindow(display, window);
-    XCloseDisplay(display);
+    if (!useWayland && display) {
+        XCloseDisplay(display);
+    }
+    // Add Wayland cleanup if needed
 }
 
 void PlatformWindowLinux::createWindow() {
-    display = XOpenDisplay(nullptr);
-    if (!display) {
-        std::cerr << "Unable to open X display!" << std::endl;
-        exit(1);
-    }
-
-    int screen = DefaultScreen(display);
-    window = XCreateSimpleWindow(display, RootWindow(display, screen),
-        100, 100, windowWidth, windowHeight, 1,
-        BlackPixel(display, screen), WhitePixel(display, screen));
-
-    XSelectInput(display, window, KeyPressMask | ExposureMask);
-    XMapWindow(display, window);
-
-    gc = XCreateGC(display, window, 0, nullptr);
-    font = XLoadQueryFont(display, "fixed");
-    if (font) XSetFont(display, gc, font->fid);
-}
-
-void PlatformWindowLinux::drawText(const std::string& text) {
-    std::cout << "[drawText] input: " << text << "\n";
-
-    if (lines.size() > 1000) {
-        std::cerr << "[drawText] Warning: lines buffer too large, trimming.\n";
-        lines.erase(lines.begin());
-    }
-
-    try {
-        lines.push_back(text);
-    } catch (const std::exception& e) {
-        std::cerr << "[drawText] Exception during push_back: " << e.what() << "\n";
+    if (useWayland) {
+        // Create Wayland window
+    } else {
+        // Create X11 window
     }
 }
 
 void PlatformWindowLinux::clear() {
-    lines.clear();
-    cursorY = 20;
-    XClearWindow(display, window);
+    if (useWayland) {
+        std::cout << "[Wayland] Clear screen\n";
+    } else {
+        std::cout << "[X11] Clear screen\n";
+    }
+}
+
+void PlatformWindowLinux::drawText(const std::string& text) {
+    if (useWayland) {
+        std::cout << "[Wayland] " << text << std::endl;
+    } else {
+        std::cout << "[X11] " << text << std::endl;
+    }
 }
 
 void PlatformWindowLinux::refresh() {
-    std::cout << "[refresh] line count: " << lines.size() << std::endl;
-    XClearWindow(display, window);
-    int y = 20;
-    for (const auto& line : lines) {
-        XDrawString(display, window, gc, 10, y, line.c_str(), line.length());
-        y += 20;
-    }
-    XFlush(display);
+    // X11 or Wayland buffer swap if needed
 }
 
-void PlatformWindowLinux::setWriteMode(bool isWriteMode) {
-    writeMode = isWriteMode;
-}
-
-void PlatformWindowLinux::handleRawInput(char input) {
-    if (!writeMode) {
-        std::string s(1, input);
-        XDrawString(display, window, gc, cursorX, cursorY, s.c_str(), 1);
-        cursorX += 10;
-        if (cursorX > windowWidth) {
-            cursorX = 10;
-            cursorY += 20;
-        }
-    }
-}
-
-void PlatformWindowLinux::handleKeyPress(char input) {
-    if (writeMode) {
-        std::string s(1, input);
-        drawText(s);
-        refresh();
-    } else {
-        handleRawInput(input);
-    }
+void PlatformWindowLinux::setWriteMode(bool enabled) {
+    writeMode = enabled;
 }
 
 char PlatformWindowLinux::waitForCharInput() {
-    XEvent event;
-    while (true) {
-        XNextEvent(display, &event);
-        if (event.type == KeyPress) {
-            KeySym key = XLookupKeysym(&event.xkey, 0);
-            if (key >= 32 && key <= 126) {
-                return static_cast<char>(key);
-            }
-        }
-    }
+    char ch;
+    std::cin.get(ch);
+    return ch;
 }
 
 std::string PlatformWindowLinux::waitForLineInput() {
     std::string input;
-    char ch;
-    while (true) {
-        ch = waitForCharInput();
-
-        if (ch == '\n' || ch == '\r') break;
-        else if (ch == '\b' || ch == 127) {
-            if (!input.empty()) input.pop_back();
-        } else {
-            input += ch;
-        }
-
-        drawText("Input: " + input);  // Update the line
-        refresh();
-    }
+    std::getline(std::cin, input);
     return input;
 }
 
+void PlatformWindowLinux::handleRawInput(char input) {
+    std::cout << "[Raw Input] " << input << std::endl;
+}
+
+void PlatformWindowLinux::handleKeyPress(char input) {
+    std::cout << "[Key Press] " << input << std::endl;
+}
+
 void PlatformWindowLinux::run() {
-    XEvent event;
-    while (true) {
-        XNextEvent(display, &event);
-        if (event.type == Expose) {
-            refresh();
-        } else if (event.type == KeyPress) {
-            char input = XLookupKeysym(&event.xkey, 0);
-            handleKeyPress(input);
-        }
-    }
+    drawText("PlatformWindowLinux running...");
+    refresh();
 }

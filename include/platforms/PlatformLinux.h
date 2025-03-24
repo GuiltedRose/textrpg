@@ -1,14 +1,12 @@
 #pragma once
 
 #include "GameWindow.h"
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include <string>
-#include <vector>
+#include <X11/Xlib.h>
 
 class PlatformWindowLinux : public GameWindow {
 public:
-    PlatformWindowLinux();               // ← Add this
+    PlatformWindowLinux();
     ~PlatformWindowLinux() override;
 
     void createWindow() override;
@@ -17,22 +15,14 @@ public:
     void refresh() override;
     void setWriteMode(bool enabled) override;
     char waitForCharInput() override;
-    std::string waitForLineInput() override;  // ← REQUIRED now!
+    std::string waitForLineInput() override;
 
-    void handleRawInput(char input);               // ← NEW
-    void handleKeyPress(char input);               // ← NEW
-    void run();      
+    void handleRawInput(char input);
+    void handleKeyPress(char input);
+    void run();
 
 private:
-    Display* display = nullptr;
-    Window window;
-    GC gc;
-    XFontStruct* font = nullptr;
-    int cursorX = 10;
-    int cursorY = 20;
-    const int windowWidth = 800;
-    const int windowHeight = 600;
+    bool useWayland = false;
     bool writeMode = true;
-
-    std::vector<std::string> lines;
+    Display* display = nullptr; // X11 only
 };

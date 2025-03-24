@@ -18,4 +18,7 @@ class PlatformWindowWindows : public GameWindow {
         void handleRawInput(char input);   // optional, if used
         void handleKeyPress(char input);   // optional, if used
         void run();
+
+    private:
+        bool writeMode = true;
     };
