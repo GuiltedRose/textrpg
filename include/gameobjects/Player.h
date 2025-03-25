@@ -10,6 +10,7 @@
 
 class Player {
 public:
+    Player() : Player("Default") {}
     explicit Player(std::string name);
     bool isDead() const;
 

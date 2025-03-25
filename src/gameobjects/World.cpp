@@ -24,3 +24,11 @@ bool World::shouldTriggerCombat() const {
 Enemy World::getRandomEnemy() const {
     return Enemy("Goblin", "Monsters", 3);
 }
+
+std::string World::generate(unsigned int seed) {
+    std::string startLoc;
+    worldMap = WorldGenerator::generateMap(10, startLoc, seed);
+    worldSeed = seed;
+
+    return startLoc;  // Let Game decide what to do with it
+}
