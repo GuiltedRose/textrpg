@@ -18,6 +18,11 @@ public:
 
     void drawTextOverlay(const std::string& message);  // Placeholder stub
 
+    int getFramebufferWidth() const;
+    int getFramebufferHeight() const;
+
+    void drawTextOverlayLine(const std::string& text, int x, int y);
+
 private:
     void initVulkan();
     void cleanup();
@@ -26,7 +31,9 @@ private:
     void* nativeWindow;
     void* nativeDisplay;
     
-
+    VkImage fontImage = VK_NULL_HANDLE;
+    VkDeviceMemory fontImageMemory = VK_NULL_HANDLE;
+    VkImageView fontImageView = VK_NULL_HANDLE;
     VkInstance instance = VK_NULL_HANDLE;
     VkSurfaceKHR surface = VK_NULL_HANDLE;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;

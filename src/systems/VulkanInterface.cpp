@@ -1,5 +1,5 @@
 #include "systems/VulkanInterface.h"
-#include "tools/std_image_raw.h"
+#include "tools/stb_image_raw.h"
 
 #ifdef _WIN32
     #define VK_USE_PLATFORM_WIN32_KHR
@@ -22,6 +22,7 @@
 VulkanRenderer::VulkanRenderer(void* window, void* display)
     : nativeWindow(window), nativeDisplay(display) {
     initVulkan();
+    selectPhysicalDevice();
     loadFontTexture();
 }
 
@@ -88,6 +89,59 @@ void VulkanRenderer::initVulkan() {
     std::cout << "Vulkan initialized with surface." << std::endl;
 }
 
+void VulkanRenderer::selectPhysicalDevice() {
+    uint32_t deviceCount = 0;
+    vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+
+    if (deviceCount == 0) {
+        throw std::runtime_error("No Vulkan-compatible GPU found!");
+    }
+
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+
+    // Pick the first available device for now
+    physicalDevice = devices[0];
+
+    // Find a queue family that supports graphics
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
+
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
+
+    uint32_t graphicsFamilyIndex = -1;
+    for (uint32_t i = 0; i < queueFamilyCount; ++i) {
+        if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+            graphicsFamilyIndex = i;
+            break;
+        }
+    }
+
+    if (graphicsFamilyIndex == -1) {
+        throw std::runtime_error("Failed to find a graphics queue family!");
+    }
+
+    float queuePriority = 1.0f;
+    VkDeviceQueueCreateInfo queueCreateInfo{};
+    queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfo.queueFamilyIndex = graphicsFamilyIndex;
+    queueCreateInfo.queueCount = 1;
+    queueCreateInfo.pQueuePriorities = &queuePriority;
+
+    VkDeviceCreateInfo deviceCreateInfo{};
+    deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    deviceCreateInfo.queueCreateInfoCount = 1;
+    deviceCreateInfo.pQueueCreateInfos = &queueCreateInfo;
+
+    if (vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create logical Vulkan device!");
+    }
+
+    vkGetDeviceQueue(device, graphicsFamilyIndex, 0, &graphicsQueue);
+}
+
+
 void VulkanRenderer::cleanup() {
     if (fontImageView != VK_NULL_HANDLE) {
         vkDestroyImageView(device, fontImageView, nullptr);
@@ -118,9 +172,24 @@ void VulkanRenderer::drawTextOverlay(const std::string& message) {
     std::cout << "[Overlay] " << message << std::endl;
 }
 
+int VulkanRenderer::getFramebufferWidth() const {
+    // Stub - Replace with actual swapchain extent
+    return 800;
+}
+
+int VulkanRenderer::getFramebufferHeight() const {
+    // Stub - Replace with actual swapchain extent
+    return 600;
+}
+
+void VulkanRenderer::drawTextOverlayLine(const std::string& text, int x, int y) {
+    // Stub - Replace with Vulkan draw calls
+    std::cout << "Draw text at (" << x << "," << y << "): " << text << std::endl;
+}
+
 void VulkanRenderer::loadFontTexture() {
     int width, height, channels;
-    unsigned char* pixels = stbi_load("assets/font_texture_128x64.png", &width, &height, &channels, STBI_rgb_alpha);
+    unsigned char* pixels = stbi_load("../assets/font.png", &width, &height, &channels, STBI_rgb_alpha);
 
     if (!pixels) {
         throw std::runtime_error("Failed to load font texture image");

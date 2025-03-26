@@ -3,9 +3,7 @@
 #include <stdexcept>
 #include <cstring>
 
-TextRenderer::TextRenderer(VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, VkRenderPass renderPass);
-
-    : device(device), physicalDevice(physicalDevice) {
+TextRenderer::TextRenderer(VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, VkRenderPass renderPass) : device(device), physicalDevice(physicalDevice) {
     createFontTexture();
     createDescriptorSetLayout();
     createPipeline(renderPass);

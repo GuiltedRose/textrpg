@@ -11,6 +11,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include/systems
     ${CMAKE_SOURCE_DIR}/include/platforms
     ${CMAKE_SOURCE_DIR}/include/tools
+    ${CMAKE_SOURCE_DIR}/include/screens
 )
 
 # === Common Source Files ===
@@ -19,6 +20,7 @@ set(COMMON_SOURCES
     src/Game.cpp
     src/platforms/PlatformFactory.cpp
     src/tools/GameLogger.cpp
+    src/tools/stb_image_impl.cpp
     src/tools/font8x8.cpp
     src/tools/TextRenderer.cpp
     src/systems/VulkanInterface.cpp
@@ -30,6 +32,7 @@ set(COMMON_SOURCES
     src/gameobjects/Inventory.cpp
     src/gameobjects/Item.cpp
     src/gameobjects/Player.cpp
+    src/screens/TitleScreen.cpp
 )
 
 # === Platform-specific Sources ===

@@ -28,7 +28,7 @@
 
 // Directly include the stb_image source (as a C header).
 // This must be placed in your project directory under the same name.
-#include "stb_image_raw.h"
+#include "tools/stb_image_raw.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

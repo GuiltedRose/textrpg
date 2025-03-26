@@ -1,7 +1,9 @@
 #include "Game.h"
 #include "tools/GameLogger.h"
 #include "platforms/PlatformFactory.h"
+#include "screens/TitleScreen.h"
 #include "systems/SaveSystem.h"
+#include "systems/VulkanInterface.h"
 #include <memory>
 #include <iostream>
 
@@ -15,6 +17,10 @@ int main(int argc, char** argv) {
     });
 
     Game game;
+
+    // === Title Screen ===
+
+    GameState state = TitleScreen::updateAndDraw(*window, game, window->getRenderer());
 
     // === Initialization ===
     char choice;
@@ -50,7 +56,6 @@ int main(int argc, char** argv) {
         // Placeholder: future Vulkan frame logic
         window->clear();
 
-        GameLogger::info("[Vulkan] Frame rendered here...");
         window->refresh();
     }
 
